@@ -359,7 +359,7 @@ h1.h-month{font-weight:700;letter-spacing:-.02em;font-size:clamp(28px,6vw,42px)}
       <label for="desc">Descrição<input id="desc" type="text" placeholder="Ex.: Passagem de ônibus" autocomplete="off"></label>
       <label for="grupo">Grupo<select id="grupo"></select></label>
       <label for="sub">Subgrupo<select id="sub"></select></label>
-      <label for="valor">Valor (R$)<input id="valor" type="text" inputmode="decimal" placeholder="0,00"></label>
+      <label for="valor">Valor (R$)<input id="valor" type="text" inputmode="numeric" autocomplete="off" placeholder="R$00,00"></label>
       <p class="status" id="dica" hidden></p>
       <p class="err" id="err" role="alert"></p>
       <button class="btn" type="submit">Adicionar à lista</button>
@@ -518,6 +518,18 @@ $('tipo').onchange=syncTipo; $('grupo').onchange=()=>{fillSub();dica();};
 fillGrupo($('fgrupo'),true); syncTipo();
 const _h=new Date();$('data').value=_h.getFullYear()+'-'+String(_h.getMonth()+1).padStart(2,'0')+'-'+String(_h.getDate()).padStart(2,'0');
 
+function maskValor(){
+  const el=$('valor');
+  let d=el.value.replace(/\D/g,'').replace(/^0+/,'').slice(0,11);
+  if(!d){el.value='';return}
+  d=d.padStart(3,'0');
+  let int=d.slice(0,-2),c=d.slice(-2);
+  if(int.length<2)int=int.padStart(2,'0');
+  int=int.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  el.value='R$'+int+','+c;
+  try{el.setSelectionRange(el.value.length,el.value.length)}catch(x){}
+}
+$('valor').addEventListener('input',maskValor);
 function parseValor(s){
   s=s.trim().replace(/R\$\s?/,'');
   if(!s)return NaN;
@@ -988,7 +1000,7 @@ store={
   del:async id=>{const a=load().filter(x=>x.id!==id);save(a);setItems(a)}
 };
 setItems(load());
-const VERSAO='2026-11-07.1';
+const VERSAO='2026-11-07.2';
 document.documentElement.setAttribute('data-versao',VERSAO);
 $('bkinfo').innerHTML='Os dados são salvos no aparelho.<br>Versão: '+VERSAO;
 
