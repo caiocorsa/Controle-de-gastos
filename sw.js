@@ -1,10 +1,10 @@
-const V = 'gastos-v5';
+const V = 'gastos-v6';
 const ARQUIVOS = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
-
+ 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(V).then(c => c.addAll(ARQUIVOS)).then(() => self.skipWaiting()));
 });
-
+ 
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
@@ -12,7 +12,7 @@ self.addEventListener('activate', e => {
       .then(() => self.clients.claim())
   );
 });
-
+ 
 // Arquivos do próprio app: tenta a internet primeiro (sem usar cópia velha do navegador)
 // e só usa a cópia guardada se estiver sem internet ou se a rede demorar mais de 4 s.
 // Fontes e outros arquivos externos: usa a cópia guardada e atualiza em segundo plano.
@@ -40,3 +40,4 @@ self.addEventListener('fetch', e => {
     );
   }
 });
+ 

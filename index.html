@@ -310,6 +310,35 @@ h1.h-month{font-weight:700;letter-spacing:-.02em;font-size:clamp(28px,6vw,42px)}
   #rows tr.mh td{padding:12px 2px 8px;border-bottom:0}
   #rows td.empty{display:block;padding:16px 2px}
 }
+
+.ttl{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.ttl h1{flex:1;min-width:0}
+.kebw{position:relative;flex:none}
+.keb{width:40px;height:40px;border-radius:50%;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;margin-top:-4px}
+.keb i{display:block;width:4px;height:4px;border-radius:50%;background:var(--fg)}
+.keb:hover,.keb[aria-expanded=true]{background:var(--line)}
+.pop{position:absolute;right:0;top:44px;z-index:40;min-width:180px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.pop button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:11px 12px;font-size:15px;cursor:pointer}
+.pop button:hover{background:var(--line)}
+.sov{align-items:center}
+.sbox{border-radius:16px!important;max-height:80%;width:min(420px,calc(100% - 32px))}
+.sh{display:flex;align-items:center;justify-content:space-between}
+.sh h3{margin:0;font-family:var(--display);font-weight:600;font-size:21px}
+.sadd{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--accent);color:var(--accent-fg);font-size:24px;line-height:1;cursor:pointer;font-weight:600}
+.sform{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:12px}
+.sform label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.serr{margin:0;color:var(--out);font-size:13px}
+.sbt{display:flex;gap:8px}.sbt .btn{flex:1}
+.ghost{background:none;border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer}
+.slist{list-style:none;margin:14px 0 0;padding:0}
+.slist li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.slist li:last-child{border-bottom:0}
+.sn{flex:1;min-width:0;display:flex;flex-direction:column}.sn span{font-size:12px;color:var(--muted)}
+.sdel{background:none;border:1px solid var(--line);color:var(--out);border-radius:10px;padding:7px 12px;cursor:pointer;font-size:13px}
+.sdel.arm{background:var(--out);color:#1a0a07;border-color:var(--out)}
+.sempty{color:var(--muted);font-size:14px}
+.sclose{width:100%;margin-top:12px}
+.sov .ghost:hover{color:var(--fg);border-color:var(--muted)}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Figtree:wght@400..600&display=swap">
 </head>
@@ -345,7 +374,9 @@ h1.h-month{font-weight:700;letter-spacing:-.02em;font-size:clamp(28px,6vw,42px)}
     </div>
     <div id="tab-lanc" class="right" role="tabpanel" hidden>
   <aside class="panel">
-    <h1>Controle de gastos</h1>
+    <div class="ttl"><h1>Controle de gastos</h1>
+      <div class="kebw"><button class="keb" id="keb" type="button" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false"><i></i><i></i><i></i></button>
+      <div class="pop" id="pop" role="menu" hidden><button type="button" role="menuitem" id="popSub">Editar subgrupos</button></div></div></div>
     <button class="btn novo" id="novo" type="button" aria-expanded="false" aria-controls="fov" aria-haspopup="dialog">Lançar</button>
     <p class="status okmsg" id="okmsg" role="status" hidden>Lançamento adicionado.</p>
     <form id="f" novalidate>
@@ -454,6 +485,20 @@ h1.h-month{font-weight:700;letter-spacing:-.02em;font-size:clamp(28px,6vw,42px)}
   <div class="h-sheet" id="hsheet" role="dialog" aria-modal="true" aria-labelledby="hshn"></div>
 </div>
 
+<div class="h-ov sov" id="sov" hidden>
+  <div class="h-sheet sbox" role="dialog" aria-modal="true" aria-labelledby="sovT">
+    <div class="sh"><h3 id="sovT">Subgrupos</h3><button class="sadd" id="sAddBtn" type="button" aria-label="Adicionar subgrupo" aria-expanded="false">+</button></div>
+    <form class="sform" id="sForm" hidden novalidate>
+      <label>Nome do subgrupo<input id="sNome" maxlength="30" autocomplete="off" placeholder="Ex.: Academia"></label>
+      <label>Ligar ao grupo<select id="sGrupo"></select></label>
+      <p class="serr" id="sErr" role="alert" hidden></p>
+      <div class="sbt"><button class="btn" type="submit">Adicionar</button><button class="ghost" id="sCancel" type="button">Cancelar</button></div>
+    </form>
+    <ul class="slist" id="sList"></ul>
+    <button class="ghost sclose" id="sClose" type="button">Fechar</button>
+  </div>
+</div>
+
 <script>
 const GRUPOS={
   "Transporte":["Ônibus","Uber","Carona"],
@@ -465,6 +510,11 @@ const GRUPOS={
 };
 const INVEST={"Renda Fixa":[],"Renda Variável":[]};
 const TODOS={...GRUPOS,...INVEST};
+/* subgrupos editáveis: salvos no aparelho */
+const KS='controle-gastos-subs';
+function carregaSubs(){try{const o=JSON.parse(localStorage.getItem(KS)||'null');if(o&&typeof o==='object')Object.keys(TODOS).forEach(g=>{if(Array.isArray(o[g]))TODOS[g].splice(0,TODOS[g].length,...o[g].filter(x=>typeof x==='string'&&x.trim()))})}catch(e){}}
+function salvaSubs(){try{localStorage.setItem(KS,JSON.stringify(TODOS))}catch(e){}}
+carregaSubs();
 const IDEAL_PADRAO={fixas:.5,variaveis:.3,invest:.2}, KM='controle-gastos-metas';
 function carregaMetas(){
   try{const o=JSON.parse(localStorage.getItem(KM)||'null');
@@ -689,7 +739,7 @@ $('t0').onclick=()=>showTab(0);$('t1').onclick=()=>showTab(1);$('t2').onclick=()
   const tabAtual=()=>$('tab-ini').hidden?($('tab-lanc').hidden?2:1):0;
   const livre=el=>{
     if(!el||!el.closest)return false;
-    if(el.closest('input,select,textarea,#hnav,#hmnav,#hov,#fov,#mov,.h-scroll'))return false;
+    if(el.closest('input,select,textarea,#hnav,#hmnav,#hov,#fov,#mov,#sov,#pop,.h-scroll'))return false;
     for(let e=el;e&&e!==document.body;e=e.parentElement){
       if(e.scrollWidth>e.clientWidth+2&&/(auto|scroll)/.test(getComputedStyle(e).overflowX))return false;
     }
@@ -748,7 +798,7 @@ function hBuild(){
   const ents=D.ents.filter(i=>+i.data.slice(8,10)<=vis);
   const tot={}, sub={}; let total=0;
   Object.keys(GRUPOS).forEach(g=>{tot[g]=0;sub[g]={}});
-  ents.forEach(i=>{const g=hGrupo(i);tot[g]+=i.valor;total+=i.valor;if(i.subgrupo)sub[g][i.subgrupo]=(sub[g][i.subgrupo]||0)+i.valor});
+  ents.forEach(i=>{const g=hGrupo(i);tot[g]+=i.valor;total+=i.valor;if(i.subgrupo&&TODOS[g]&&TODOS[g].includes(i.subgrupo))sub[g][i.subgrupo]=(sub[g][i.subgrupo]||0)+i.valor});
   /* eixo Y: múltiplo de 50 acima do maior dia dos 3 meses anteriores (R$ 200 se não houver gastos);
      se um dia do mês exibido passar da base, sobe para o múltiplo de 50 acima do maior dia do mês */
   let best=null;
@@ -920,7 +970,7 @@ function hOpen(g,btn){
     }
   }
   h+='<h4>Lançamentos</h4>';
-  h+=list.length?'<ul class="h-lst">'+list.map(i=>`<li><span class="d">${i.data.slice(8,10)}/${i.data.slice(5,7)}</span><span>${esc(i.descricao)}${i.subgrupo&&!i.descricao.includes(i.subgrupo)?` <span class="d">· ${esc(i.subgrupo)}</span>`:''}</span><span class="v">${brl(i.valor)}</span></li>`).join('')+'</ul>'
+  h+=list.length?'<ul class="h-lst">'+list.map(i=>`<li><span class="d">${i.data.slice(8,10)}/${i.data.slice(5,7)}</span><span>${esc(i.descricao)}${i.subgrupo&&TODOS[g]&&TODOS[g].includes(i.subgrupo)&&!i.descricao.includes(i.subgrupo)?` <span class="d">· ${esc(i.subgrupo)}</span>`:''}</span><span class="v">${brl(i.valor)}</span></li>`).join('')+'</ul>'
     :'<div class="h-empty">Nenhum lançamento neste grupo no período.</div>';
   hsheet.innerHTML=h;hsheet.scrollTop=0;hov.hidden=false;document.body.style.overflow='hidden';$('hxb').focus();
 }
@@ -944,7 +994,7 @@ function hOpenEnt(g,btn){
 function hClose(){if(hov.hidden)return;hov.hidden=true;document.body.style.overflow='';if(hLast&&document.contains(hLast))hLast.focus()}
 $('hcards').addEventListener('click',e=>{const c=e.target.closest('.h-card');if(c)(c.dataset.g==='__ent'?hOpenEnt:hOpen)(c.dataset.g,c)});
 hov.addEventListener('click',e=>{if(e.target===hov||e.target.closest('#hxb'))hClose()});
-addEventListener('keydown',e=>{if(e.key==='Escape'){hClose();mClose()}});
+addEventListener('keydown',e=>{if(e.key==='Escape'){hClose();mClose();sClose();popClose()}});
 addEventListener('scroll',()=>{if(hHideFn)hHideFn()},{passive:true});
 document.addEventListener('pointerdown',e=>{if(hHideFn&&e.pointerType==='touch'&&!e.target.closest('#hsvg'))hHideFn()});
 
@@ -989,7 +1039,7 @@ store={
   del:async id=>{const a=load().filter(x=>x.id!==id);save(a);setItems(a)}
 };
 setItems(load());
-const VERSAO='2026-11-07.3';
+const VERSAO='2026-11-10.1';
 document.documentElement.setAttribute('data-versao',VERSAO);
 $('bkinfo').innerHTML='Os dados são salvos no aparelho.<br>Versão: '+VERSAO;
 
@@ -1004,8 +1054,8 @@ function baixar(nome,tipo,texto){
 }
 $('exp').onclick=()=>{
   const a=load();
-  baixar('controle-de-gastos-'+hojeISO+'.json','application/json',JSON.stringify({app:'controle-de-gastos',versao:1,exportadoEm:new Date().toISOString(),lancamentos:a},null,2));
-  bmsg(a.length+' lançamentos exportados.');
+  baixar('controle-de-gastos-'+hojeISO+'.json','application/json',JSON.stringify({app:'controle-de-gastos',versao:1,exportadoEm:new Date().toISOString(),subgrupos:TODOS,lancamentos:a},null,2));
+  bmsg(a.length+' lançamentos e os subgrupos exportados.');
 };
 $('expcsv').onclick=()=>{
   const q=s=>'"'+String(s||'').replace(/"/g,'""')+'"';
@@ -1017,8 +1067,8 @@ $('bktoggle').onclick=()=>{const abrir=$('bkbox').hidden;$('bkbox').hidden=!abri
 $('imp').onclick=()=>$('file').click();
 $('file').onchange=async e=>{
   const f=e.target.files[0];e.target.value='';if(!f)return;
-  let dados;
-  try{const j=JSON.parse(await f.text());dados=Array.isArray(j)?j:j.lancamentos;if(!Array.isArray(dados))throw 0;}
+  let dados,subsBk=null;
+  try{const j=JSON.parse(await f.text());dados=Array.isArray(j)?j:j.lancamentos;if(!Array.isArray(dados))throw 0;if(!Array.isArray(j)&&j.subgrupos&&typeof j.subgrupos==='object')subsBk=j.subgrupos;}
   catch(x){return bmsg('Arquivo inválido. Escolha um backup exportado por este aplicativo.');}
   const atual=load(), ids=new Set(atual.map(i=>i.id));
   let novos=0,repetidos=0,invalidos=0;
@@ -1032,10 +1082,46 @@ $('file').onchange=async e=>{
     ids.add(rec.id);atual.push(rec);novos++;
   });
   try{save(atual);setItems(atual);}catch(x){return bmsg('Não foi possível salvar: o armazenamento do navegador está cheio ou bloqueado.');}
-  bmsg(novos+' adicionados, '+repetidos+' já existiam, '+invalidos+' ignorados por erro.');
+  let subMsg='';
+  if(subsBk){let mudou=false;
+    Object.keys(TODOS).forEach(g=>{if(!Array.isArray(subsBk[g]))return;
+      const l=[];subsBk[g].forEach(n=>{if(typeof n!=='string')return;n=n.trim().replace(/\s+/g,' ').slice(0,30);if(n&&!l.some(x=>x.toLowerCase()===n.toLowerCase()))l.push(n)});
+      if(JSON.stringify(l)!==JSON.stringify(TODOS[g]))mudou=true;
+      TODOS[g].splice(0,TODOS[g].length,...l)});
+    salvaSubs();fillSub();setItems(load());
+    subMsg=mudou?' Lista de subgrupos substituída pela do backup.':' Subgrupos já estavam iguais ao backup.';}
+  bmsg(novos+' adicionados, '+repetidos+' já existiam, '+invalidos+' ignorados por erro.'+subMsg);
 };
 
-/* Instalação e modo offline */
+
+/* ===== Editar subgrupos ===== */
+let sLast=null;
+function popClose(){if($('pop').hidden)return;$('pop').hidden=true;$('keb').setAttribute('aria-expanded','false')}
+$('keb').onclick=e=>{e.stopPropagation();const o=$('pop').hidden;$('pop').hidden=!o;$('keb').setAttribute('aria-expanded',String(o))};
+document.addEventListener('click',e=>{if(!e.target.closest('.kebw'))popClose()});
+function sRender(){
+  const gs=Object.keys(TODOS);
+  const rows=[];gs.forEach(g=>TODOS[g].forEach(n=>rows.push([g,n])));
+  $('sList').innerHTML=rows.length?rows.map(([g,n])=>`<li><div class="sn"><b>${esc(n)}</b><span>${esc(g)}</span></div><button type="button" class="sdel" data-g="${esc(g)}" data-n="${esc(n)}" aria-label="Excluir ${esc(n)}">Excluir</button></li>`).join(''):'<li class="sempty">Nenhum subgrupo ainda. Toque em + para criar.</li>';
+}
+function sForm(show){$('sForm').hidden=!show;$('sAddBtn').setAttribute('aria-expanded',String(show));$('sAddBtn').textContent=show?'×':'+';
+  if(show){$('sGrupo').innerHTML=Object.keys(TODOS).map(g=>`<option>${esc(g)}</option>`).join('');$('sNome').value='';$('sErr').hidden=true;$('sNome').focus()}}
+function sOpen(){popClose();sLast=$('keb');sRender();sForm(false);$('sov').hidden=false;document.body.style.overflow='hidden';$('sClose').focus()}
+function sClose(){if($('sov').hidden)return;$('sov').hidden=true;document.body.style.overflow='';sForm(false);if(sLast&&document.contains(sLast))sLast.focus()}
+$('popSub').onclick=sOpen;
+$('sClose').onclick=sClose;
+$('sov').addEventListener('click',e=>{if(e.target===$('sov'))sClose()});
+$('sAddBtn').onclick=()=>sForm($('sForm').hidden);
+$('sCancel').onclick=()=>sForm(false);
+function sRefresh(){salvaSubs();sRender();const g=$('grupo').value,s=$('sub').value;if(!$('grupo').disabled){fillSub();if([...$('sub').options].some(o=>o.value===s))$('sub').value=s}if(typeof render==='function')render()}
+$('sForm').onsubmit=e=>{e.preventDefault();
+  const n=$('sNome').value.trim().replace(/\s+/g,' '),g=$('sGrupo').value,er=$('sErr');
+  if(!n){er.textContent='Digite um nome.';er.hidden=false;return}
+  if(TODOS[g].some(x=>x.toLowerCase()===n.toLowerCase())){er.textContent='Já existe esse subgrupo em '+g+'.';er.hidden=false;return}
+  TODOS[g].push(n);sRefresh();sForm(false)};
+$('sList').onclick=e=>{const b=e.target.closest('.sdel');if(!b)return;
+  if(!b.dataset.arm){b.dataset.arm='1';b.textContent='Confirmar?';b.classList.add('arm');setTimeout(()=>{if(b.isConnected){delete b.dataset.arm;b.textContent='Excluir';b.classList.remove('arm')}},3000);return}
+  const g=b.dataset.g,n=b.dataset.n,i=TODOS[g].indexOf(n);if(i>=0)TODOS[g].splice(i,1);sRefresh()};/* Instalação e modo offline */
 let dip=null;
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e;$('inst').hidden=false;});
 $('inst').onclick=async()=>{if(!dip)return;dip.prompt();try{await dip.userChoice}catch(x){}dip=null;$('inst').hidden=true;};
