@@ -190,6 +190,10 @@ svg.hc{display:block}
 .h-sg .bar i{display:block;height:100%;background:var(--c);border-radius:3px}
 .h-lst li{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
 .h-lst .d{color:var(--muted)}
+.h-chips{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 10px}
+.h-chip{border:1px solid var(--line);background:none;color:var(--muted);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+.h-chip[aria-pressed=true]{border-color:var(--c,var(--accent));color:var(--c,var(--accent));background:color-mix(in srgb,var(--c,var(--accent)) 14%,transparent)}
+.h-fs{font-family:var(--mono);font-size:12px;font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0}
 .h-lst .v{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
 .h-empty{color:var(--muted);padding:8px 0}
 .tabs{flex-wrap:wrap}
@@ -645,7 +649,7 @@ function dica(){
 }
 function fillSub(){
   const l=TODOS[$('grupo').value]||[];
-  $('sub').innerHTML=l.length?l.map(s=>`<option>${s}</option>`).join(''):'<option value="">—</option>';
+  $('sub').innerHTML=l.length?l.map(s=>`<option>${s}</option>`).join('')+'<option value="">-</option>':'<option value="">—</option>';
   $('sub').disabled=!l.length;
 }
 function syncTipo(){
@@ -1063,10 +1067,10 @@ function hOpen(g,btn){
         return `<li><div class="r"><span>${esc(k)}</span><span>${brl(v)} · ${Math.round(v/tot*100)}%</span></div><div class="bar"><i style="width:${(v/tot*100).toFixed(1)}%"></i></div></li>`}).join('')+'</ul>';
     }
   }
-  h+='<h4>Lançamentos</h4>';
-  h+=list.length?'<ul class="h-lst">'+list.map(i=>`<li><span class="d">${i.data.slice(8,10)}/${i.data.slice(5,7)}</span><span>${esc(i.descricao)}${i.subgrupo&&TODOS[g]&&TODOS[g].includes(i.subgrupo)&&!i.descricao.includes(i.subgrupo)?` <span class="d">· ${esc(i.subgrupo)}</span>`:''}</span><span class="v">${brl(i.valor)}</span></li>`).join('')+'</ul>'
-    :'<div class="h-empty">Nenhum lançamento neste grupo no período.</div>';
-  hsheet.innerHTML=h;hsheet.scrollTop=0;hov.hidden=false;document.body.style.overflow='hidden';$('hxb').focus();
+  {const okS=i=>i.subgrupo&&TODOS[g]&&TODOS[g].includes(i.subgrupo)?i.subgrupo:'__none';
+   const ks=[...new Set(list.map(okS))].sort((a,b)=>a==='__none'?1:b==='__none'?-1:a.localeCompare(b)).map(k=>({k,l:k==='__none'?'Sem subgrupo':k}));
+   hFxSet(list,okS,i=>`<li><span class="d">${i.data.slice(8,10)}/${i.data.slice(5,7)}</span><span>${esc(i.descricao)}${i.subgrupo&&TODOS[g]&&TODOS[g].includes(i.subgrupo)&&!i.descricao.includes(i.subgrupo)?` <span class="d">· ${esc(i.subgrupo)}</span>`:''}</span><span class="v">${brl(i.valor)}</span></li>`,ks.length>1?ks:[],HC[g],'Nenhum lançamento neste grupo no período.');}
+  hsheet.innerHTML=h+hsheetTail;hFxDraw();hsheet.scrollTop=0;hov.hidden=false;document.body.style.overflow='hidden';$('hxb').focus();
 }
 function hOpenEnt(g,btn){
   hLast=btn;
@@ -1109,20 +1113,34 @@ function hOpenInv(g,btn){
     <div class="t"><h3 id="hshn">Investimentos</h3><span class="h-sub">${H.nome} ${H.y} · ${H.today?'até o dia '+H.vis:'mês completo'}</span></div>
     <button class="h-x" id="hxb" type="button" aria-label="Fechar">×</button></div>
     <div class="h-sh-tot" style="--c:${HC.Investimentos}"><b>${brl(E.total)}</b><span class="h-sub">${E.p===null?'sem entradas no período':E.p+'% das entradas'} · ${list.length} ${list.length===1?'lançamento':'lançamentos'}</span></div>`;
-  const ks=['Renda Fixa','Renda Variável'], mx=Math.max(1,...ks.map(k=>Math.abs(E.tipos[k]||0)));
+  const ks=['Renda Fixa','Renda Variável'], ks0=ks, mx=Math.max(1,...ks.map(k=>Math.abs(E.tipos[k]||0)));
   {
     h+=`<h4>Quanto foi investido em cada tipo</h4><ul class="h-sg" style="--c:${HC.Investimentos}">`+ks.map(k=>{const v=Math.round((E.tipos[k]||0)*100)/100;
       return `<li><div class="r"><span>${esc(k)}</span><span>${brl(v)}</span></div><div class="bar"><i style="width:${(Math.abs(v)/mx*100).toFixed(1)}%"></i></div></li>`}).join('')+'</ul>';
   }
   h+=`<h4>Guardado hoje (todos os meses)</h4><ul class="h-sg" style="--c:${HC.Investimentos}"><li><div class="r"><span>Renda Fixa</span><span>${brl(gd['Renda Fixa'])}</span></div></li><li><div class="r"><span>Renda Variável</span><span>${brl(gd['Renda Variável'])}</span></div></li></ul>`;
-  h+='<h4>Lançamentos</h4>';
-  h+=list.length?'<ul class="h-lst">'+list.map(i=>`<li><span class="d">${i.data.slice(8,10)}/${i.data.slice(5,7)}</span><span>${esc(i.descricao)} <span class="d">· ${esc(i.grupo)}${kind(i.tipo)==='res'?' · resgate':''}</span></span><span class="v">${kind(i.tipo)==='res'?'−':''}${brl(i.valor)}</span></li>`).join('')+'</ul>'
-    :'<div class="h-empty">Nenhum investimento neste período.</div>';
-  hsheet.innerHTML=h;hsheet.scrollTop=0;hov.hidden=false;document.body.style.overflow='hidden';$('hxb').focus();
+  {const ik=i=>kind(i.tipo)==='res'?'Resgates':i.grupo, ks=['Renda Fixa','Renda Variável','Resgates'].filter(k=>list.some(i=>ik(i)===k)).map(k=>({k,l:k}));
+   hFxSet(list,ik,i=>`<li><span class="d">${i.data.slice(8,10)}/${i.data.slice(5,7)}</span><span>${esc(i.descricao)} <span class="d">· ${esc(i.grupo)}${kind(i.tipo)==='res'?' · resgate':''}</span></span><span class="v">${kind(i.tipo)==='res'?'−':''}${brl(i.valor)}</span></li>`,ks.length>1?ks:[],HC.Investimentos,'Nenhum investimento neste período.');}
+  hsheet.innerHTML=h+hsheetTail;hFxDraw();hsheet.scrollTop=0;hov.hidden=false;document.body.style.overflow='hidden';$('hxb').focus();
+}
+/* ---- filtro por subgrupo dentro da janela do balão (só filtra a lista de lançamentos) ---- */
+var hFx=null;
+function hFxSet(list,key,row,ks,color,vazio){
+  hFx={list,key,row,ks,cur:'*',vazio};
+  hFx.h=`<h4 id="hfh">Lançamentos</h4>`+(ks.length?`<div class="h-chips" id="hfc" role="group" aria-label="Filtrar lançamentos por subgrupo" style="--c:${color}"></div>`:'')+`<div id="hfl"></div>`;
+  hsheetTail=hFx.h;
+}
+var hsheetTail='';
+function hFxDraw(){
+  if(!hFx)return;const f=hFx,sel=f.cur==='*'?f.list:f.list.filter(i=>f.key(i)===f.cur);
+  const c=$('hfc');if(c)c.innerHTML=[{k:'*',l:'Todos'}].concat(f.ks).map(o=>`<button type="button" class="h-chip" data-k="${esc(o.k)}" aria-pressed="${o.k===f.cur}">${esc(o.l)}</button>`).join('');
+  const t=f.cur==='*'?0:Math.round(sel.reduce((a,i)=>a+(kind(i.tipo)==='res'?-i.valor:i.valor),0)*100)/100;
+  $('hfh').innerHTML='Lançamentos'+(f.cur==='*'?'':` <span class="h-fs">· ${sel.length} · ${brl(t)}</span>`);
+  $('hfl').innerHTML=sel.length?'<ul class="h-lst">'+sel.map(f.row).join('')+'</ul>':`<div class="h-empty">${f.vazio}</div>`;
 }
 function hClose(){if(hov.hidden)return;hov.hidden=true;document.body.style.overflow='';if(hLast&&document.contains(hLast))hLast.focus()}
 $('hcards').addEventListener('click',e=>{const c=e.target.closest('.h-card');if(c)(c.dataset.g==='__ent'?hOpenEnt:c.dataset.g==='__inv'?hOpenInv:hOpen)(c.dataset.g,c)});
-hov.addEventListener('click',e=>{if(e.target===hov||e.target.closest('#hxb'))hClose()});
+hov.addEventListener('click',e=>{if(e.target===hov||e.target.closest('#hxb'))hClose();const c=e.target.closest('.h-chip');if(c&&hFx){hFx.cur=c.dataset.k;hFxDraw()}});
 addEventListener('keydown',e=>{if(e.key==='Escape'){hClose();mClose();sClose();popClose();uClose();gClose()}});
 addEventListener('scroll',()=>{if(hHideFn)hHideFn()},{passive:true});
 document.addEventListener('pointerdown',e=>{if(hHideFn&&e.pointerType==='touch'&&!e.target.closest('#hsvg'))hHideFn()});
@@ -1168,7 +1186,7 @@ store={
   del:async id=>{const a=load().filter(x=>x.id!==id);save(a);setItems(a)}
 };
 setItems(load());
-const VERSAO='2026-11-19.1';
+const VERSAO='2026-11-19.2';
 document.documentElement.setAttribute('data-versao',VERSAO);
 $('bkinfo').innerHTML='Os dados são salvos no aparelho.<br>Versão: '+VERSAO;
 
@@ -1296,6 +1314,7 @@ function rmdPeriodo(){
 }
 function rmdCheck(){
   const el=$('rmd'),p=rmdPeriodo();let show=!!p;
+  if(show){const g=guardado();if(!(g['Renda Fixa']>0||g['Renda Variável']>0))show=false}
   if(p){const ym=dataLocalHoje().slice(0,7),a=ym+'-'+String(p.ini).padStart(2,'0'),b=ym+'-'+String(p.fim).padStart(2,'0');
     if(items.some(i=>i.tipo==='Rendimento'&&i.data>=a&&i.data<=b))show=false;
     try{if(localStorage.getItem(KR)===dataLocalHoje())show=false}catch(x){}}
