@@ -14,8 +14,9 @@ body{margin:0}
 [hidden]{display:none!important}
 /* Layout: formulário fixo à esquerda (topo no celular), resumo + lista à direita. Visual de caderno contábil: papel frio, tinta azul-petróleo, números tabulares. */
 :root{
-  --bg:#000000; --surface:#0e1012; --fg:#ececec; --muted:#9a9fa6; --line:#24282c;
-  --accent:#e8b84a; --accent-fg:#1a1203; --in:#5fd38d; --out:#f2826f; --inv:#6ea8fe;
+  --bg:#000000; --surface:#0e1012; --fg:#ececec; --muted:#9a9fa6; --line:#333a41;
+  --accent:#e8b84a; --accent-fg:#1a1203; --in:#5fd38d; --out:#f2826f; --inv:#8f9bff;
+  --sal:#d9dde3; --warn:#ffb454; --res:#7fd4ff; --track:#20252a;
   --display:'Bricolage Grotesque','Trebuchet MS',system-ui,sans-serif; --body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif; --mono:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
   color-scheme:dark;
 }
@@ -141,7 +142,7 @@ svg.hc{display:block}
 .hc text{fill:var(--muted);font:500 11px var(--body)}
 .hc text.tl{fill:var(--accent-fg);font-weight:600}
 .hc text.hj{fill:var(--accent);font-weight:600;font-size:10px;letter-spacing:.06em;text-transform:uppercase}
-.hc .gr{stroke:#1b1e21;stroke-width:1}
+.hc .gr{stroke:var(--track);stroke-width:1}
 .hc .ba{stroke:var(--line);stroke-width:1}
 .hc .fut{fill:#fff;opacity:.04}
 .hc .ln{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
@@ -168,7 +169,7 @@ svg.hc{display:block}
 .h-rw span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:14px;color:var(--c);font-variant-numeric:tabular-nums}
 .h-ring{width:100%;height:100%;transform:rotate(-90deg)}
 .h-ring circle{fill:none;stroke-width:9}
-.h-ring .t{stroke:#1b1e21}
+.h-ring .t{stroke:var(--track)}
 .h-ring .a{stroke:var(--c)}
 .h-ov{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;justify-content:center}
 .h-sheet{width:min(580px,100%);max-height:88%;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px 10px 0 0;
@@ -186,7 +187,7 @@ svg.hc{display:block}
 .h-sg li:last-child,.h-lst li:last-child{border-bottom:0}
 .h-sg .r{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
 .h-sg .r span+span{font-family:var(--mono);font-size:13px}
-.h-sg .bar{margin-top:6px;height:6px;border-radius:3px;background:#1b1e21;overflow:hidden}
+.h-sg .bar{margin-top:6px;height:6px;border-radius:3px;background:var(--track);overflow:hidden}
 .h-sg .bar i{display:block;height:100%;background:var(--c);border-radius:3px}
 .h-lst li{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
 .h-lst .d{color:var(--muted)}
@@ -259,7 +260,7 @@ h1.h-month{font-weight:700;letter-spacing:-.02em;font-size:clamp(28px,6vw,42px)}
   /* 7) menu fixo no fundo; o conteúdo ganha espaço para nunca ficar coberto */
   body{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
   .tabs{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;
-    padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));background:rgba(10,11,12,.97);border-top:1px solid var(--line);
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--surface) 97%,transparent);border-top:1px solid var(--line);
     -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
   .tab,.tab[aria-selected="true"]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:54px;
     padding:6px 4px;border:0;border-radius:12px;background:none;color:var(--muted);font-size:12px;font-weight:600}
@@ -367,6 +368,90 @@ h1.h-month{font-weight:700;letter-spacing:-.02em;font-size:clamp(28px,6vw,42px)}
 .ipk svg,.gi svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .gi{width:34px;height:34px;border-radius:10px;flex:none}
 .slist li{flex-wrap:wrap}.gmsg{flex-basis:100%;margin:0}
+
+/* ===== Novo design (revisão de interface) ===== */
+.panel,.card,.h-card,.h-sheet,.pop,.rmd,.sform,.gform,.rpop{border-width:1.5px}
+/* setas do mês */
+.h-arrow{width:42px;height:42px;border:1.5px solid color-mix(in srgb,var(--fg) 40%,var(--line));background:color-mix(in srgb,var(--fg) 8%,transparent);color:var(--fg)}
+.h-arrow:disabled{opacity:.35}
+/* balões */
+#hcards,#hinv{grid-template-columns:minmax(0,1fr)}
+#hinv{margin-top:2px}
+.h-card.hb{display:flex;align-items:center;gap:14px;min-height:74px;padding:14px 16px}
+.hb .h-ico{width:42px;height:42px;border-radius:12px;flex:none}
+.hb .h-ico svg{width:22px;height:22px}
+.hb-main{flex:1;min-width:0;display:grid;gap:6px}
+.hb-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;min-width:0}
+.hb-row h3{margin:0;font-family:var(--display);font-weight:700;font-size:16px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.hb .h-tot{font-size:18px;grid-column:auto;text-align:right}
+.hb .h-top{display:block;margin:0;padding:0;border:0;font-size:12.5px;line-height:1.3;color:var(--muted);grid-column:auto}
+.hb .h-top b{color:var(--fg);font-weight:600}
+.hb-meter{display:flex;align-items:center;gap:10px}
+.hb-bar{flex:1;height:8px;border-radius:99px;background:var(--track);overflow:hidden}
+.hb-bar i{display:block;height:100%;background:var(--c);border-radius:99px}
+.hb-pc{min-width:36px;text-align:right;font-family:var(--display);font-weight:700;font-size:13px;color:var(--c);font-variant-numeric:tabular-nums}
+.hb-note{font-size:12px;color:var(--muted)}
+/* menu dos três pontinhos */
+.pop{top:calc(100% + 8px);right:0;min-width:200px;padding:6px;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.pop::before{content:'';position:absolute;right:15px;top:-7px;width:11px;height:11px;background:var(--surface);border-left:1.5px solid var(--line);border-top:1.5px solid var(--line);transform:rotate(45deg)}
+.pop button{display:flex;align-items:center;gap:12px;min-height:44px}
+.pop svg,.rpop svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;color:var(--muted)}
+.keb{margin-top:0}
+/* janelas: puxador, X maior, chips maiores */
+.h-sheet:not(.sbox)::before{content:'';display:block;width:44px;height:5px;border-radius:99px;background:color-mix(in srgb,var(--fg) 28%,var(--line));margin:-8px auto 14px}
+.h-x{width:44px;height:44px;font-size:28px;border:1.5px solid color-mix(in srgb,var(--fg) 30%,var(--line))}
+.h-chips{gap:10px}
+.h-chip{min-height:42px;padding:0 16px;font-size:14px}
+/* aba Lançamentos: cabeçalho compacto */
+.bkbtn svg{width:20px;height:20px}
+@media (max-width:860px){
+  .ttl h1{display:none}
+  .ttl{align-items:center;justify-content:space-between}
+  .ttl .novo{display:inline-flex;align-items:center;gap:8px;width:auto;margin:0;min-height:44px;padding:0 22px}
+  .ttl .novo svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+  #tab-lanc aside.panel{padding:12px 14px}
+  #bktoggle{display:none}
+  #tab-lanc aside .backup{margin-top:0}
+  #tab-lanc aside .backup:has(#bkbox:not([hidden])){margin-top:12px}
+}
+.atu.hot{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-weight:700}
+.atu.hot:hover{color:var(--accent-fg);border-color:var(--accent);filter:brightness(1.08)}
+/* rendimento: barra segue o sinal */
+.rdl{border-left-color:var(--muted)}.rdl.pos{border-left-color:var(--in)}.rdl.neg{border-left-color:var(--out)}
+/* metas por estado */
+.bar b{width:3px;border-radius:2px}
+.bar i.ok{background:var(--in)}.bar i.over{background:var(--out)}.bar i.low{background:var(--warn)}
+.row span.over{color:var(--out)}.row span.low{color:var(--warn)}
+.mleg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0 0;font-size:12px;color:var(--muted)}
+.mleg span{display:inline-flex;align-items:center;gap:6px}.mleg i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.mleg i.ok{background:var(--in)}.mleg i.over{background:var(--out)}.mleg i.low{background:var(--warn)}
+/* chips de tipo */
+.fchips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;margin-bottom:2px;scrollbar-width:none}
+.fchips::-webkit-scrollbar{display:none}
+.fchips{-webkit-mask-image:linear-gradient(to right,#000 88%,transparent);mask-image:linear-gradient(to right,#000 88%,transparent)}
+.fchip{flex:none;min-height:42px;padding:0 16px;border-radius:99px;border:1.5px solid var(--line);background:none;color:var(--muted);font-size:14px;cursor:pointer;white-space:nowrap}
+.fchip[aria-pressed=true]{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);font-weight:600}
+/* etiquetas */
+.tag.t-inv{color:var(--inv);background:color-mix(in srgb,var(--inv) 16%,transparent)}
+.tag.t-res{color:var(--res);border-style:dashed}
+.tag.t-rend{color:var(--muted)}
+/* linhas */
+.rk{width:44px;height:44px;border-radius:50%;border:0;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer}
+.rk:hover,.rk[aria-expanded=true]{background:var(--line);color:var(--fg)}
+.rk svg{width:22px;height:22px;fill:currentColor}
+.rpop{position:fixed;z-index:60;min-width:200px;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.rpop button{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;background:none;border:0;border-radius:8px;padding:0 12px;font-size:15px;color:var(--out);cursor:pointer;text-align:left}
+.rpop button svg{color:var(--out)}
+.rpop button:hover{background:var(--line)}
+@media (max-width:560px){
+  tr.lr{grid-template-columns:minmax(0,1fr) auto 44px;grid-template-rows:auto auto;column-gap:10px;row-gap:4px;align-items:center;min-height:72px;padding:10px 0}
+  tr.lr td:nth-child(3){display:contents}
+  tr.lr .dsc{grid-column:1;grid-row:1;font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  tr.lr .ml{grid-column:1;grid-row:2;display:block;margin:0;font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  tr.lr td:nth-child(2){display:block;grid-column:2;grid-row:2;justify-self:end}
+  tr.lr td.v{grid-column:2;grid-row:1;justify-self:end;align-self:center;font-size:15px}
+  tr.lr td:last-child{grid-column:3;grid-row:1/span 2;justify-self:center;align-self:center}
+}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Figtree:wght@400..600&display=swap">
 </head>
@@ -399,13 +484,17 @@ h1.h-month{font-weight:700;letter-spacing:-.02em;font-size:clamp(28px,6vw,42px)}
         <h2 id="hgr">Gastos por grupo</h2>
         <div class="h-cards" id="hcards"></div>
       </section>
+      <section aria-labelledby="hig">
+        <h2 id="hig">Investido no mês</h2>
+        <div class="h-cards" id="hinv"></div>
+      </section>
     </div>
     <div id="tab-lanc" class="right" role="tabpanel" hidden>
   <aside class="panel">
     <div class="ttl"><h1>Controle de gastos</h1>
+      <button class="btn novo" id="novo" type="button" aria-expanded="false" aria-controls="fov" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Lançar</button>
       <div class="kebw"><button class="keb" id="keb" type="button" aria-label="Mais opções" aria-haspopup="menu" aria-expanded="false"><i></i><i></i><i></i></button>
-      <div class="pop" id="pop" role="menu" hidden><button type="button" role="menuitem" id="popGr">Editar grupos</button><button type="button" role="menuitem" id="popSub">Editar subgrupos</button></div></div></div>
-    <button class="btn novo" id="novo" type="button" aria-expanded="false" aria-controls="fov" aria-haspopup="dialog">Lançar</button>
+      <div class="pop" id="pop" role="menu" hidden><button type="button" role="menuitem" id="popGr"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Editar grupos</button><button type="button" role="menuitem" id="popSub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>Editar subgrupos</button><button type="button" role="menuitem" id="popBk"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v3h16v-3"/></svg>Backup</button></div></div></div>
     <p class="status okmsg" id="okmsg" role="status" hidden>Lançamento adicionado.</p>
     <form id="f" novalidate>
       <label for="data">Data<input id="data" type="date"></label>
@@ -435,6 +524,7 @@ h1.h-month{font-weight:700;letter-spacing:-.02em;font-size:clamp(28px,6vw,42px)}
         </div>
         <p class="status" id="bkmsg" role="status"></p>
         <p class="status" id="bkinfo"></p>
+        <button class="ghost big" id="bkclose" type="button">Fechar backup</button>
       </div>
     </div>
   </aside>
@@ -451,9 +541,10 @@ h1.h-month{font-weight:700;letter-spacing:-.02em;font-size:clamp(28px,6vw,42px)}
     </section>
     <section class="panel">
       <h2>Lançamentos</h2>
+      <div class="fchips" id="fchips" role="group" aria-label="Filtrar por tipo"></div>
       <div class="toolbar">
         <select id="fmes" aria-label="Filtrar por mês"></select>
-        <select id="ftipo" aria-label="Filtrar por tipo"><option value="">Todos os tipos</option><option>Entrada Fixa</option><option>Entrada Variável</option><option>Despesa Fixa</option><option>Despesa Variável</option><option>Investimento</option><option>Resgate</option><option>Rendimento</option></select>
+        <select id="ftipo" hidden aria-label="Filtrar por tipo"><option value="">Todos os tipos</option><option>Entrada Fixa</option><option>Entrada Variável</option><option>Despesa Fixa</option><option>Despesa Variável</option><option>Investimento</option><option>Resgate</option><option>Rendimento</option></select>
         <select id="fgrupo" aria-label="Filtrar por grupo"></select>
       </div>
       <div class="scroll">
@@ -491,6 +582,7 @@ h1.h-month{font-weight:700;letter-spacing:-.02em;font-size:clamp(28px,6vw,42px)}
     </div>
 </div>
 
+<div class="rpop" id="rpop" role="menu" hidden><button type="button" role="menuitem"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Excluir lançamento</button></div>
 <div class="h-ov" id="fov" hidden>
   <div class="h-sheet" id="fsheet" role="dialog" aria-modal="true" aria-labelledby="ftit">
     <div class="h-sh-head"><div class="t"><h3 id="ftit">Novo lançamento</h3></div>
@@ -738,12 +830,12 @@ function render(){
   dica();
   $('cap').textContent=$('fmes').value?'Resumo de '+mname($('fmes').value):'Resumo de todos os meses';
   $('cards').innerHTML=[
-    ['Entradas',ent,'--in'],['Despesas',desp,'--out'],['Investimentos',inv,'--inv'],['Saldo',saldo,saldo<0?'--out':'--in']
+    ['Entradas',ent,'--in'],['Despesas',desp,'--out'],['Investimentos',inv,'--inv'],['Saldo',saldo,saldo<0?'--out':'--sal']
   ].map(([l,v,c])=>`<div class="card c" style="--c:var(${c})"><small>${l}</small><div class="num">${brl(v)}</div></div>`).join('');
-  const r=(l,v,ideal)=>{const p=ent?v/ent:0;return `<div class="row"><span>${l}</span><div class="bar" title="Ideal ${pct(ideal)}"><i style="width:${Math.max(0,Math.min(p,1))*100}%"></i><b style="left:${ideal*100}%"></b></div><span>${pct(p)} / ${pct(ideal)}</span></div>`};
-  $('meta').innerHTML=r('Despesas fixas',fix,IDEAL.fixas)+r('Despesas variáveis',vari,IDEAL.variaveis)+r('Investimentos',inv,IDEAL.invest)+
-    '<div class="metas-foot"><button class="ghost" id="metas" type="button">Metas</button></div>';
-  $('rows').innerHTML=list.length?groupRows(list,i=>`<tr class="lr"><td>${fdata(i.data)}</td><td><span class="tag ${kind(i.tipo)==='in'?'pos':kind(i.tipo)==='out'?'neg':''}" style="${kind(i.tipo)==='inv'||kind(i.tipo)==='res'||kind(i.tipo)==='rend'?'color:var(--inv)':''}">${i.tipo}</span></td><td>${esc(i.descricao)}<div class="ml"><span>${fdata(i.data)}</span><span class="tag ${kind(i.tipo)==='in'?'pos':kind(i.tipo)==='out'?'neg':''}" style="${kind(i.tipo)==='inv'||kind(i.tipo)==='res'||kind(i.tipo)==='rend'?'color:var(--inv)':''}">${i.tipo}</span>${i.grupo?`<span>${esc(i.grupo)}${i.subgrupo?' › '+esc(i.subgrupo):''}</span>`:''}</div></td><td>${esc(i.grupo)||'—'}</td><td>${esc(i.subgrupo)||'—'}</td><td class="v ${kind(i.tipo)==='in'||kind(i.tipo)==='res'||(kind(i.tipo)==='rend'&&i.valor>0)?'pos':kind(i.tipo)==='rend'?'neg':''}">${kind(i.tipo)==='rend'&&i.valor>0?'+':''}${brl(i.valor)}</td><td><button class="ghost" data-id="${i.id}" aria-label="Excluir lançamento">Excluir</button></td></tr>`).join('')
+  const r=(l,v,ideal,mode)=>{const p=ent?v/ent:0,st=mode==='max'?(p>ideal+1e-9?'over':'ok'):(p+1e-9<ideal?'low':'ok');return `<div class="row"><span>${l}</span><div class="bar" title="Ideal ${pct(ideal)}"><i class="${st}" style="width:${Math.max(0,Math.min(p,1))*100}%"></i><b style="left:${ideal*100}%"></b></div><span class="${st}">${pct(p)} / ${pct(ideal)}</span></div>`};
+  $('meta').innerHTML=r('Despesas fixas',fix,IDEAL.fixas,'max')+r('Despesas variáveis',vari,IDEAL.variaveis,'max')+r('Investimentos',inv,IDEAL.invest,'min')+
+    '<p class="mleg"><span><i class="ok"></i>Dentro da meta</span><span><i class="over"></i>Acima do limite</span><span><i class="low"></i>Abaixo da meta de investimento</span></p><div class="metas-foot"><button class="ghost" id="metas" type="button">Metas</button></div>';
+  $('rows').innerHTML=list.length?groupRows(list,i=>`<tr class="lr"><td>${fdata(i.data)}</td><td>${tagH(i)}</td><td><span class="dsc">${esc(i.descricao)}</span><div class="ml">${i.data.slice(8,10)}/${i.data.slice(5,7)}${i.grupo?' · '+esc(i.grupo)+(i.subgrupo?' › '+esc(i.subgrupo):''):''}</div></td><td>${esc(i.grupo)||'—'}</td><td>${esc(i.subgrupo)||'—'}</td><td class="v ${kind(i.tipo)==='in'||kind(i.tipo)==='res'||(kind(i.tipo)==='rend'&&i.valor>0)?'pos':kind(i.tipo)==='rend'?'neg':''}">${kind(i.tipo)==='rend'&&i.valor>0?'+':''}${brl(i.valor)}</td><td><button class="rk" data-id="${i.id}" type="button" aria-label="Mais opções do lançamento" aria-haspopup="menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></button></td></tr>`).join('')
     :'<tr><td colspan="7" class="empty">Nenhum lançamento aqui ainda. Preencha o formulário e clique em Adicionar à lista.</td></tr>';
 }
 function renderMsum(base){
@@ -753,11 +845,9 @@ function renderMsum(base){
   const e=s('in'),d=s('out'),v=s('inv')-s('res'),sd=e-d-v;
   el.innerHTML=`<b>${mname(k)}</b><span>Entradas <em class="pos">${brl(e)}</em></span><span>Despesas <em class="neg">${brl(d)}</em></span><span>Investido <em>${brl(v)}</em></span><span>Saldo <em class="${sd<0?'neg':'pos'}">${brl(sd)}</em></span>`;
 }
+function tagH(i){var k=kind(i.tipo),c=k==='in'?'pos':k==='out'?'neg':k==='inv'?'t-inv':k==='res'?'t-res':'t-rend';return '<span class="tag '+c+'">'+i.tipo+'</span>'}
 function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
-$('rows').addEventListener('click',async e=>{
-  const id=e.target.dataset.id; if(!id)return;
-  try{await store.del(id);}catch(x){$('err').textContent='Não foi possível excluir.';}
-});
+$('rows').addEventListener('click',e=>{const kb=e.target.closest('.rk');if(kb)rkOpen(kb)});
 ['fmes','ftipo','fgrupo'].forEach(id=>$(id).onchange=render);
 
 const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
@@ -858,7 +948,7 @@ $('t0').onclick=()=>showTab(0);$('t1').onclick=()=>showTab(1);$('t2').onclick=()
 function setItems(a){items=a.map(migrar);renderFilters();render();renderRes();renderHome();}
 
 /* ===== Aba Início: mês navegável, gráfico diário e cartões por grupo (só despesas) ===== */
-const HC={"Entradas":"#5fd38d","Transporte":"#5eb8f0","Alimentação":"#fb923c","Mercado":"#86d36a","Entretenimento":"#e879c9","Contas":"#2dd4bf","Outros":"#94a3b8"};
+const HC={"Entradas": "#5fd38d", "Transporte": "#4da3ff", "Alimentação": "#ff9b3d", "Mercado": "#7ed957", "Entretenimento": "#a98bff", "Contas": "#2fd1c1", "Outros": "#94a3b8"};
 const HICONS={
   "Entradas":'<path d="M12 2.5v19"/><path d="M16.5 7C16 5.6 14.3 4.8 12 4.8S7.6 6 7.6 8.1s1.8 2.7 4.4 3.3 4.4 1.3 4.4 3.5-2 3.4-4.4 3.4-4.1-.9-4.6-2.5"/>',
   "Transporte":'<rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 17v3M16 17v3"/><circle cx="8" cy="14" r=".7"/><circle cx="16" cy="14" r=".7"/>',
@@ -869,7 +959,7 @@ const HICONS={
   "Outros":'<circle cx="5.5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18.5" cy="12" r="1.4"/>'
 };
 CUSTOM.forEach(g=>{HC[g.n]=g.c;HICONS[g.n]=ICONES[g.i]});
-HC['Investimentos']='#6ea8fe';HICONS['Investimentos']='<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>';
+HC['Investimentos']='#8f9bff';HICONS['Investimentos']='<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>';
 const hGrupo=i=>GRUPOS[i.grupo]?i.grupo:'Outros';
 const hKey=(y,m)=>y+'-'+String(m+1).padStart(2,'0');
 const hp2=n=>String(n).padStart(2,'0');
@@ -986,14 +1076,16 @@ function hCards(){
   const rest=H.total>0?100-fl.reduce((a,b)=>a+b,0):0;
   raw.map((v,i)=>[v-Math.floor(v),i]).sort((a,b)=>b[0]-a[0]).slice(0,rest).forEach(p=>{fl[p[1]]++});
   H.pct={}; gs.forEach((g,i)=>{H.pct[g]=fl[i]});
-  const C=2*Math.PI*22;
-  $('hcards').innerHTML=gs.map((g,i)=>{
-    const ts=GRUPOS[g].length?hTopSub(g):null;
-    return `<button class="h-card" type="button" data-g="${esc(g)}" style="--c:${HC[g]}" aria-haspopup="dialog">
-      <div class="h-who"><h3>${g}</h3><span class="h-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${HICONS[g]}</svg></span></div>
-      <div class="h-nums"><span class="h-tot">${brl(H.tot[g])}</span>${ts?`<span class="h-top" title="Subgrupo de maior gasto"><span><b>${esc(ts.n)}</b> · <em>${brl(ts.v)}</em></span></span>`:''}</div>
-      <div class="h-rw"><svg class="h-ring" viewBox="0 0 56 56" role="img" aria-label="${g}: ${fl[i]}% dos gastos"><circle class="t" cx="28" cy="28" r="22"/><circle class="a" cx="28" cy="28" r="22" stroke-dasharray="${(raw[i]/100*C).toFixed(2)} ${C.toFixed(2)}"/></svg><span>${fl[i]}%</span></div></button>`;
-  }).join('')+hInvCard();
+  const ord=gs.map((g,i)=>i).sort((a,b)=>(H.tot[gs[b]]-H.tot[gs[a]])||(a-b));
+  $('hcards').innerHTML=ord.map(i=>{
+    const g=gs[i], nsub=Object.values(H.sub[g]||{}).filter(v=>v>0).length, ts=nsub>1?hTopSub(g):null;
+    return `<button class="h-card hb" type="button" data-g="${esc(g)}" style="--c:${HC[g]}" aria-haspopup="dialog">
+      <span class="h-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${HICONS[g]}</svg></span>
+      <div class="hb-main"><div class="hb-row"><h3>${esc(g)}</h3><span class="h-tot">${brl(H.tot[g])}</span></div>
+      ${ts?`<span class="h-top" title="Subgrupo de maior gasto"><b>${esc(ts.n)}</b> · <em>${brl(ts.v)}</em></span>`:''}
+      <div class="hb-meter" role="img" aria-label="${esc(g)}: ${fl[i]}% dos gastos"><span class="hb-bar"><i style="width:${Math.min(100,raw[i]).toFixed(1)}%"></i></span><span class="hb-pc">${fl[i]}%</span></div></div></button>`;
+  }).join('');
+  $('hinv').innerHTML=hInvCard();
 }
 /* ---- balão Entradas: total do período, % de entradas fixas e tipo de maior valor ---- */
 function hEntData(){
@@ -1100,13 +1192,13 @@ function hInvData(){
   return {it,tipos,total,ent,p:ent>0?Math.round(total/ent*100):null,top};
 }
 function hInvCard(){
-  const E=hInvData(),C=2*Math.PI*22,pp=E.p===null?0:Math.max(0,Math.min(E.p,100));
-  return `<button class="h-card" type="button" data-g="__inv" style="--c:${HC.Investimentos}" aria-haspopup="dialog">
-      <div class="h-who"><h3>Investimentos</h3><span class="h-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${HICONS.Investimentos}</svg></span></div>
-      <div class="h-nums"><span class="h-tot">${brl(E.total)}</span></div>
-      <div class="h-rw"><svg class="h-ring" viewBox="0 0 56 56" role="img" aria-label="Investimentos: ${E.p===null?'sem entradas no período':E.p+'% das entradas'}"><circle class="t" cx="28" cy="28" r="22"/><circle class="a" cx="28" cy="28" r="22" stroke-dasharray="${(pp/100*C).toFixed(2)} ${C.toFixed(2)}"/></svg><span${E.p!==null&&Math.abs(E.p)>=100?' style="font-size:12px"':''}>${E.p===null?'—':E.p+'%'}</span></div></button>`;
-}
-function hOpenInv(g,btn){
+  const E=hInvData(),pp=E.p===null?0:Math.max(0,Math.min(E.p,100));
+  return `<button class="h-card hb" type="button" data-g="__inv" style="--c:${HC.Investimentos}" aria-haspopup="dialog">
+      <span class="h-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${HICONS.Investimentos}</svg></span>
+      <div class="hb-main"><div class="hb-row"><h3>Investimentos</h3><span class="h-tot">${brl(E.total)}</span></div>
+      <div class="hb-meter" role="img" aria-label="Investimentos: ${E.p===null?'sem entradas no período':E.p+'% das entradas'}"><span class="hb-bar"><i style="width:${pp}%"></i></span><span class="hb-pc">${E.p===null?'—':E.p+'%'}</span></div>
+      <span class="hb-note">${E.p===null?'Sem entradas no período':'das entradas do mês'}</span></div></button>`;
+}function hOpenInv(g,btn){
   hLast=btn;
   const E=hInvData(), list=E.it.slice().sort((a,b)=>b.data.localeCompare(a.data)||b.criado-a.criado), gd=guardado();
   let h=`<div class="h-sh-head" style="--c:${HC.Investimentos}"><span class="h-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${HICONS.Investimentos}</svg></span>
@@ -1139,9 +1231,10 @@ function hFxDraw(){
   $('hfl').innerHTML=sel.length?'<ul class="h-lst">'+sel.map(f.row).join('')+'</ul>':`<div class="h-empty">${f.vazio}</div>`;
 }
 function hClose(){if(hov.hidden)return;hov.hidden=true;document.body.style.overflow='';if(hLast&&document.contains(hLast))hLast.focus()}
-$('hcards').addEventListener('click',e=>{const c=e.target.closest('.h-card');if(c)(c.dataset.g==='__ent'?hOpenEnt:c.dataset.g==='__inv'?hOpenInv:hOpen)(c.dataset.g,c)});
+const hClick=e=>{const c=e.target.closest('.h-card');if(c)(c.dataset.g==='__ent'?hOpenEnt:c.dataset.g==='__inv'?hOpenInv:hOpen)(c.dataset.g,c)};
+$('hcards').addEventListener('click',hClick);$('hinv').addEventListener('click',hClick);
 hov.addEventListener('click',e=>{if(e.target===hov||e.target.closest('#hxb'))hClose();const c=e.target.closest('.h-chip');if(c&&hFx){hFx.cur=c.dataset.k;hFxDraw()}});
-addEventListener('keydown',e=>{if(e.key==='Escape'){hClose();mClose();sClose();popClose();uClose();gClose()}});
+addEventListener('keydown',e=>{if(e.key==='Escape'){hClose();mClose();sClose();popClose();uClose();gClose();rkClose()}});
 addEventListener('scroll',()=>{if(hHideFn)hHideFn()},{passive:true});
 document.addEventListener('pointerdown',e=>{if(hHideFn&&e.pointerType==='touch'&&!e.target.closest('#hsvg'))hHideFn()});
 
@@ -1186,7 +1279,7 @@ store={
   del:async id=>{const a=load().filter(x=>x.id!==id);save(a);setItems(a)}
 };
 setItems(load());
-const VERSAO='2026-11-19.2';
+const VERSAO='2026-11-21.1';
 document.documentElement.setAttribute('data-versao',VERSAO);
 $('bkinfo').innerHTML='Os dados são salvos no aparelho.<br>Versão: '+VERSAO;
 
@@ -1299,9 +1392,9 @@ function renderRd(base){
   const el=$('rdl'),r2=v=>Math.round(v*100)/100;
   const f=g=>r2(base.filter(i=>i.tipo==='Rendimento'&&i.grupo===g).reduce((a,i)=>a+i.valor,0));
   const rf=f('Renda Fixa'),rv=f('Renda Variável'),t=r2(rf+rv);
-  el.hidden=false;
-  el.innerHTML=`<button type="button" class="rdl-h" id="rdBtn" aria-expanded="${rdOpen}"><span>${$('fmes').value?'Rendimento do mês':'Rendimento (todos os meses)'} <i class="rdc" aria-hidden="true">${rdOpen?'▴':'▾'}</i></span><b class="${scl(t)}">${sgn(t)}</b></button>`+
-    (rdOpen?`<div class="rdd"><div><span>Renda Fixa</span><b class="${scl(rf)}">${sgn(rf)}</b></div><div><span>Renda Variável</span><b class="${scl(rv)}">${sgn(rv)}</b></div></div>`:'');
+  el.hidden=false;el.className='rdl '+scl(t);setTimeout(function(){if(typeof rmdCheck==='function')rmdCheck()},0);
+  el.innerHTML=`<button type="button" class="rdl-h" id="rdBtn" aria-expanded="${rdOpen}"><span>${$('fmes').value?'Rendimento do mês':'Rendimento (todos os meses)'} <i class="rdc" aria-hidden="true">${rdOpen?'▴':'▾'}</i></span><b class="${scl(t)}">${brl(Math.abs(t))}</b></button>`+
+    (rdOpen?`<div class="rdd"><div><span>Renda Fixa</span><b class="${scl(rf)}">${brl(Math.abs(rf))}</b></div><div><span>Renda Variável</span><b class="${scl(rv)}">${brl(Math.abs(rv))}</b></div></div>`:'');
 }
 $('rdl').onclick=e=>{if(e.target.closest('#rdBtn')){rdOpen=!rdOpen;render()}};
 /* ===== Lembrete: meio e fim do mês ===== */
@@ -1313,10 +1406,11 @@ function rmdPeriodo(){
   return null;
 }
 function rmdCheck(){
-  const el=$('rmd'),p=rmdPeriodo();let show=!!p;
+  const el=$('rmd'),p=rmdPeriodo();let show=!!p;$('atu').classList.remove('hot');
   if(show){const g=guardado();if(!(g['Renda Fixa']>0||g['Renda Variável']>0))show=false}
   if(p){const ym=dataLocalHoje().slice(0,7),a=ym+'-'+String(p.ini).padStart(2,'0'),b=ym+'-'+String(p.fim).padStart(2,'0');
     if(items.some(i=>i.tipo==='Rendimento'&&i.data>=a&&i.data<=b))show=false;
+    $('atu').classList.toggle('hot',show);
     try{if(localStorage.getItem(KR)===dataLocalHoje())show=false}catch(x){}}
   el.hidden=!show;if(show)$('rmdT').textContent=p.txt+': que tal atualizar o saldo dos seus investimentos?';
 }
@@ -1384,6 +1478,40 @@ function mergeRem(lista){
   if(k){reordena();gRefresh()}
   return k;
 }
+
+/* ===== Novo design: interações ===== */
+var FT=[['','Todos'],['Entrada Fixa','Entrada fixa'],['Entrada Variável','Entrada variável'],['Despesa Fixa','Despesa fixa'],['Despesa Variável','Despesa variável'],['Investimento','Investimento'],['Resgate','Resgate'],['Rendimento','Rendimento']];
+function ftDraw(){$('fchips').innerHTML=FT.map(function(x){return '<button type="button" class="fchip" data-v="'+x[0]+'" aria-pressed="'+($('ftipo').value===x[0])+'">'+x[1]+'</button>'}).join('')}
+$('fchips').onclick=function(e){var b=e.target.closest('.fchip');if(!b)return;$('ftipo').value=b.dataset.v;ftDraw();render()};
+ftDraw();
+var rkEl=null;
+function rkClose(){var p=$('rpop');if(!p.hidden){p.hidden=true;if(rkEl)rkEl.setAttribute('aria-expanded','false')}rkEl=null}
+function rkOpen(b){
+  if(rkEl===b){rkClose();return}
+  rkClose();rkEl=b;var p=$('rpop'),r=b.getBoundingClientRect();
+  p.hidden=false;p.dataset.id=b.dataset.id;b.setAttribute('aria-expanded','true');
+  var w=p.offsetWidth,h=p.offsetHeight,top=r.bottom+6;
+  if(top+h>innerHeight-90)top=r.top-h-6;
+  p.style.top=top+'px';p.style.left=Math.max(8,Math.min(innerWidth-w-8,r.right-w))+'px';
+}
+$('rpop').onclick=async function(e){var b=e.target.closest('button');if(!b)return;var id=$('rpop').dataset.id;rkClose();try{await store.del(id)}catch(x){$('err').textContent='Não foi possível excluir.'}};
+document.addEventListener('click',function(e){if(!e.target.closest('.rk')&&!e.target.closest('#rpop'))rkClose()});
+addEventListener('scroll',rkClose,{passive:true});
+$('popBk').onclick=function(){popClose();var o=$('bkbox').hidden;$('bktoggle').click();if(o)setTimeout(function(){$('bkbox').scrollIntoView({block:'nearest',behavior:'smooth'})},60)};
+$('bkclose').onclick=function(){$('bktoggle').click()};
+/* puxador: arrastar a janela para baixo fecha */
+(function(){
+  var s=null,y0=0,dy=0;
+  document.addEventListener('touchstart',function(e){
+    var sh=e.target.closest('.h-sheet');if(!sh||sh.classList.contains('sbox')||sh.scrollTop>0)return;
+    var y=e.touches[0].clientY;if(y-sh.getBoundingClientRect().top>64)return;
+    s=sh;y0=y;dy=0;sh.style.transition='none';
+  },{passive:true});
+  document.addEventListener('touchmove',function(e){if(!s)return;dy=Math.max(0,e.touches[0].clientY-y0);s.style.transform='translateY('+dy+'px)'},{passive:true});
+  function fim(){if(!s)return;var sh=s,fechar=dy>90;s=null;sh.style.transition='transform .18s';sh.style.transform='';
+    if(fechar){var x=sh.querySelector('.h-x');if(x)x.click()}}
+  document.addEventListener('touchend',fim,{passive:true});document.addEventListener('touchcancel',fim,{passive:true});
+})();
 
 /* Instalação e modo offline */
 let dip=null;
